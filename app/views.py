@@ -8,6 +8,18 @@ This file creates your application.
 
 from app import app
 from flask import render_template, request, redirect, url_for
+from flask.ext.wtf import Form
+from wtforms.fields import TextField
+from wtforms.validators import Required, Email
+from app import db
+from app.models import Profile
+
+
+
+class ProfileForm(Form):
+      first_name=TextField('First Name', validators=[Required()])
+      last_name= TextField('Last Name', validators=[Required()]) 
+      image = TextField('Image',validators=[Required()])
 
 
 ###
@@ -18,6 +30,28 @@ from flask import render_template, request, redirect, url_for
 def home():
     """Render website's home page."""
     return render_template('home.html')
+
+@app.route('/profile/', methods=['POST','GET'])
+def profile_add():
+    form = ProfileForm()
+    #if it is a post
+    if request.method == "POST":
+        #write to the database
+        first_name= request.form['first_name']
+        last_name= request.form['last_name']
+        return "{} {} this was a post".format(first_name,last_name)
+    return render_template('profile_add.html', form=form)
+
+@app.route('/profiles/')
+def profile_list():
+    return "list all profiles"
+
+@app.route('/profile/<int:id>')
+def profile_view(id):
+    return "profile {}".format(id)
+
+
+
 
 
 @app.route('/about/')
